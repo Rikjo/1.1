@@ -1,0 +1,42 @@
+version: "3.7"
+
+networks:
+  monitor-net:
+    name: monitor-net
+    driver: bridge
+services:
+  quartz_node:
+    image: uniquenetwork/quartz-node-public:v917000
+    container_name: quartz_node
+    networks:
+      - monitor-net
+    volumes:
+      - ./chain-data:/chain-data
+    ports:
+      - 9833:9833
+      - 9844:9844
+      - 40333:40333
+      - 30333:30333
+    restart: unless-stopped
+    command:  >
+      /usr/local/bin/unique-collator
+      --base-path /chain-data
+      --chain /quartz-public.json
+      --port 30333
+      --rpc-port 9833
+      --ws-port 9844
+      --no-prometheus 
+      --no-mdns
+      --telemetry-url '172.17.0.1://substrate-telemetry:9001/submit 0'
+      --unsafe-ws-external
+      --unsafe-rpc-external
+      -- 
+      --execution wasm
+      --state-cache-size 0
+      --chain /kusama.json
+      --port 40333
+      --rpc-port 9933
+      --ws-port 9944
+      --no-prometheus
+      --no-mdns
+      --no-telemetry
